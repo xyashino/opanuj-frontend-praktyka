@@ -1,34 +1,40 @@
-function validator() {
-  const input = document.getElementById('input');
-  const button = document.getElementById('button');
-  const button2 = document.getElementById('button2');
-  const result = document.getElementById('result');
-
-  button.addEventListener('click', () => {
-    if (input.value) {
-      if (Number.isInteger(input.value)) {
-        if (
-          Number(input.value) > 0 &&
-          Number(input.value) < 100 &&
-          Number(input.value) % 2 === 0
-        ) {
-          result.innerHTML = 'Valid';
-        } else {
-          result.innerHTML = 'Invalid';
-        }
-        result.innerHTML = 'Valid';
-      } else {
-        result.innerHTML = 'Invalid';
-      }
-    } else {
-      result.innerHTML = 'Invalid';
-    }
-  });
-
-  button2.addEventListener('click', () => {
-    input.value = '';
-    result.innerHTML = '';
-  });
+// utils.js
+export const listenOnClick = (element, callback) => {
+  element.addEventListener('click', callback);
 }
+
+// validation.js
+const isEven = (value) => value % 2 === 0;
+const isInRange = (value, min, max) => value >= min && value <= max;
+const validateByRules = (value, rules = []) => rules.every((rule) => rule(value));
+
+// index.js
+const handleClickOnValidationButton = (inputElement, resultElement) => {
+  const valueAsNumber = Number(inputElement.value);
+
+  const INVALID_MESSAGE = 'Invalid';
+  const VALID_MESSAGE = 'Valid';
+
+  if (isNaN(valueAsNumber)) {
+    resultElement.innerHTML = INVALID_MESSAGE;
+    return;
+  }
+
+  const rules = [isEven, (value) => isInRange(value, 30, 50)];
+  const isValid = validateByRules(valueAsNumber, rules);
+
+  resultElement.innerHTML = isValid ? VALID_MESSAGE : INVALID_MESSAGE;
+};
+
+const handleClickOnClearButton= (inputElement, resultElement) => {
+  inputElement.value = '';
+  resultElement.innerHTML = '';
+};
+
+const validator = () => {
+  const [input , validateButton, clearButton , result] = ['input', 'validateButton', 'clearButton', 'result'].map((id) => document.getElementById(id));
+  listenOnClick(validateButton, () => handleClickOnValidationButton(input, result));
+  listenOnClick(clearButton, () => handleClickOnClearButton(input, result));
+};
 
 validator();
